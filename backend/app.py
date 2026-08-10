@@ -15,10 +15,26 @@ CORS(app)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-MODEL_PATH = os.path.join(BASE_DIR, "../model/house_price_model.pkl.gz")
-COLUMNS_PATH = os.path.join(BASE_DIR, "../model/model_columns.pkl")
-DATASET_PATH = os.path.join(BASE_DIR, "../data/Bengaluru_House_Data.csv")
+# Model files are inside backend/model/
+MODEL_PATH = os.path.join(
+    BASE_DIR,
+    "model",
+    "house_price_model.pkl.gz"
+)
 
+COLUMNS_PATH = os.path.join(
+    BASE_DIR,
+    "model",
+    "model_columns.pkl"
+)
+
+# Dataset is in the root data/ folder
+DATASET_PATH = os.path.join(
+    BASE_DIR,
+    "..",
+    "data",
+    "Bengaluru_House_Data.csv"
+)
 # ============================================================
 # LOAD MODEL
 # ============================================================
