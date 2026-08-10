@@ -40,4 +40,6 @@ frontend/.vite/
 *.temp
 
 # Trained ML model
+
+# Large trained model
 model/house_price_model.pkl
