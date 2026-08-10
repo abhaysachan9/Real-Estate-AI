@@ -4,6 +4,7 @@ import joblib
 import pandas as pd
 import os
 import numpy as np
+import gzip
 
 app = Flask(__name__)
 CORS(app)
@@ -14,7 +15,7 @@ CORS(app)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-MODEL_PATH = os.path.join(BASE_DIR, "../model/house_price_model.pkl")
+MODEL_PATH = os.path.join(BASE_DIR, "../model/house_price_model.pkl.gz")
 COLUMNS_PATH = os.path.join(BASE_DIR, "../model/model_columns.pkl")
 DATASET_PATH = os.path.join(BASE_DIR, "../data/Bengaluru_House_Data.csv")
 
@@ -23,8 +24,16 @@ DATASET_PATH = os.path.join(BASE_DIR, "../data/Bengaluru_House_Data.csv")
 # ============================================================
 
 try:
-    model = joblib.load(MODEL_PATH)
+    # Load compressed trained ML model
+    with gzip.open(MODEL_PATH, "rb") as f:
+        model = joblib.load(f)
+
+    # Load model feature columns
     columns = joblib.load(COLUMNS_PATH)
+
+    print("Model loaded successfully.")
+    print("Model columns loaded successfully.")
+
 except Exception as e:
     raise RuntimeError(f"Could not load model files: {e}")
 
@@ -1832,8 +1841,12 @@ def analytics():
 
 if __name__ == "__main__":
 
+    port = int(
+        os.environ.get("PORT", 5001)
+    )
+
     app.run(
-        host="127.0.0.1",
-        port=5001,
-        debug=True
+        host="0.0.0.0",
+        port=port,
+        debug=False
     )
