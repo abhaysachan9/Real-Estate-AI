@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 
-const API_URL = "http://127.0.0.1:5001";
+const API_URL = "https://real-estate-ai-f4ma.onrender.com";
 
 function Dashboard({ propertyData }) {
   const [analytics, setAnalytics] = useState(null);

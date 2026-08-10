@@ -106,18 +106,30 @@ function PredictionForm({ onPrediction }) {
   };
 
   const handlePredict = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!formData.location.trim()) {
-      alert("Please enter or select a location.");
-      return;
-    }
+  if (!formData.location.trim()) {
+    alert("Please enter or select a location.");
+    return;
+  }
 
-    setLoading(true);
-    setPrediction(null);
+  if (
+    !formData.total_sqft ||
+    !formData.bhk ||
+    !formData.bath ||
+    formData.balcony === ""
+  ) {
+    alert("Please fill in all property details.");
+    return;
+  }
 
-    try {
-      const response = await fetch("http://127.0.0.1:5001/predict", {
+  setLoading(true);
+  setPrediction(null);
+
+  try {
+    const response = await fetch(
+      "https://real-estate-ai-f4ma.onrender.com/predict",
+      {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -129,35 +141,41 @@ function PredictionForm({ onPrediction }) {
           balcony: Number(formData.balcony),
           location: formData.location.trim(),
         }),
-      });
-
-      const data = await response.json();
-
-      console.log("Prediction response:", data);
-
-      if (data.status === "success") {
-  setPrediction(data.predicted_price);
-
-  onPrediction({
-    total_sqft: Number(formData.total_sqft),
-    bhk: Number(formData.bhk),
-    bath: Number(formData.bath),
-    balcony: Number(formData.balcony),
-    location: formData.location.trim(),
-    predicted_price: Number(data.predicted_price),
-  });} else {
-        alert(data.message || "Prediction failed.");
       }
-    } catch (error) {
-      console.error("Prediction error:", error);
-      alert(
-        "Unable to connect to the prediction server. Make sure Flask is running on port 5000."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+    );
 
+    const data = await response.json();
+
+    console.log("Prediction response:", data);
+
+    if (!response.ok) {
+      throw new Error(data.message || "Prediction request failed.");
+    }
+
+    if (data.status === "success") {
+      setPrediction(data.predicted_price);
+
+      onPrediction({
+        total_sqft: Number(formData.total_sqft),
+        bhk: Number(formData.bhk),
+        bath: Number(formData.bath),
+        balcony: Number(formData.balcony),
+        location: formData.location.trim(),
+        predicted_price: Number(data.predicted_price),
+      });
+    } else {
+      alert(data.message || "Prediction failed.");
+    }
+  } catch (error) {
+    console.error("Prediction error:", error);
+
+    alert(
+      "Unable to connect to the prediction server. Please try again in a few seconds."
+    );
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <section
       id="prediction"
